@@ -1,0 +1,279 @@
+.main {
+  min-height: 100vh;        /* fill the viewport */
+  padding-top: 100px;       /* push content below fixed navbar */
+  display: flex;            /* center content */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  /* Theme-aware defaults */
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #000);
+}
+
+/* Example dark/light theme overrides */
+.App.dark .main {
+  background-color: #121212; /* dark background */
+  color: #ffffff;            /* white text */
+}
+
+.App.light .main {
+  background-color: #ffffff; /* light background */
+  color: #000000;            /* black text */
+}
+
+/* .card {
+  width: 30rem;
+  height: 12rem;
+  margin-bottom: 115px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+} */
+.card-body {
+  padding: 1rem;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+    font-size: 1.2rem;
+}
+.badge {
+  margin-left: 45dvh;
+  margin-top: 25px;
+}
+
+.btn-group {
+     margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* From Uiverse.io by bhaveshxrawat */ 
+.card {
+  width: 30rem;
+  height: 12rem;
+  background: #07182E;
+  position: relative;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.card h2 {
+  z-index: 3;
+  color: white;
+  font-size: 1.5em;
+  font-family: 'Poppins', sans-serif;
+margin-bottom: 99px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  width: 32rem;
+  background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+  height: 10rem;
+  animation: rotBGimg 3s linear infinite;
+  transition: all 0.2s linear;
+}
+
+@keyframes rotBGimg {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  background: #07182E;
+  ;
+  inset: 5px;
+  border-radius: 15px;
+}  
+/* .card:hover:before {
+  background-image: linear-gradient(180deg, rgb(81, 255, 0), purple);
+  animation: rotBGimg 3.5s linear infinite;
+} */
+
+
+
+/* From Uiverse.io by Damithkumara */ 
+.skip {
+  padding: 0.9em 1.8em;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 4px;
+  color: transparent;
+  border: 3px solid rgb(255, 0, 8);
+  font-size: 14px;
+  position: relative;
+  font-family: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.skip::before {
+  content: "Skip";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #363636;
+  color: rgb(255, 0, 55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s;
+}
+
+.skip:hover::before {
+  left: 100%;
+  transform: scale(0) rotateY(360deg);
+  opacity: 0;
+}
+
+.skip::after {
+  content: "Skip";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #363636;
+  color: rgb(245, 68, 68);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s;
+  transform: scale(0) rotateY(0deg);
+  opacity: 0;
+}
+
+.skip:hover::after {
+  left: 0;
+  transform: scale(1) rotateY(360deg);
+  opacity: 1;
+}
+
+.move-btn {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 20px;
+}
+
+.badge {
+  margin-left: 45dvh;
+  z-index: 2;
+  margin-bottom: 40px;
+}
+
+/* 📱 Mobile (max-width: 600px) */
+@media (max-width: 600px) {
+  .main {
+    padding-top: 60px;       /* less spacing on small screens */
+  }
+
+ .card {
+  width:33rem;   /* desktop default */
+  height: 12rem;
+  border-radius: 19px;
+  position: relative;
+  overflow: hidden;
+  
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  width: 31rem;
+  height: 8rem;
+  inset: 0;                 /* always match card size */
+  border-radius: inherit;   /* match card’s radius */
+  background-image: linear-gradient(
+    180deg,
+    rgb(0, 183, 255),
+    rgb(255, 48, 255)
+  );
+  animation: rotBGimg 3s linear infinite;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 5px;               /* inner border */
+  border-radius: inherit;   /* match card’s radius */
+  background: #07182E;
+}
+
+
+  .card h2 {
+    font-size: 1.2em;        /* smaller heading */
+    margin-bottom: 40px;     /* reduce spacing */
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: space-between;  /* stack buttons vertically */
+    gap: 12px;
+    width: 100%;          /* full width */
+  }
+
+  .btn {
+    padding: 8px 16px;       /* smaller padding */
+    font-size: 0.9rem;       /* smaller text */
+  }
+
+  .skip {
+    padding: 0.7em 1.4em;    /* shrink skip button */
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-left: 30px;
+  }
+
+  .badge {
+    margin-left: 0;          /* center badge on mobile */
+    margin-top: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+}
+
+/* 📱 Tablet (max-width: 900px) */
+@media (max-width: 900px) {
+  .card {
+    width: 24rem;            /* medium size card */
+    height: 10rem;
+  }
+
+  .card h2 {
+    font-size: 1.3em;
+    margin-bottom: 60px;
+  }
+
+  .btn {
+    padding: 9px 18px;
+    font-size: 0.95rem;
+  }
+}
+

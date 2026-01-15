@@ -1,162 +1,63 @@
-// API Service Layer - Professional backend integration with auto port detection
-const POSSIBLE_PORTS = [5000, 3001, 8000, 4000];
-const API_BASE_PATH = '/api';
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+// src/services/api.js
+
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    'REACT_APP_API_URL is not defined. Please set it in your environment variables.'
+  );
+}
 
 class ApiService {
   constructor() {
-    this.baseURL = null;
-    this.isConnected = false;
+    this.baseURL = API_BASE_URL;
+    console.log(`🚀 API connected: ${this.baseURL}`);
   }
 
-  // Auto-detect working backend port (only in development)
-  async detectBackendPort() {
-    if (this.isConnected && this.baseURL) {
-      return this.baseURL;
-    }
-
-    // In production, always use environment variable
-    if (IS_PRODUCTION) {
-      const envUrl = process.env.REACT_APP_API_URL;
-      if (envUrl) {
-        this.baseURL = envUrl;
-        this.isConnected = true;
-        console.log(`🚀 Production mode: Using ${envUrl}`);
-        return this.baseURL;
-      } else {
-        throw new Error('❌ Production deployment requires REACT_APP_API_URL environment variable');
-      }
-    }
-
-    // Development mode: First try environment variable
-    const envUrl = process.env.REACT_APP_API_URL;
-    if (envUrl) {
-      try {
-        const response = await fetch(envUrl.replace('/api', ''), { 
-          method: 'GET',
-          timeout: 3000 
-        });
-        if (response.ok) {
-          this.baseURL = envUrl;
-          this.isConnected = true;
-          console.log(`✅ Connected to backend at: ${envUrl}`);
-          return this.baseURL;
-        }
-      } catch (error) {
-        console.log(`❌ Environment URL ${envUrl} not responding`);
-      }
-    }
-
-    // Development mode: Try common ports
-    for (const port of POSSIBLE_PORTS) {
-      const testUrl = `http://localhost:${port}`;
-      try {
-        const response = await fetch(testUrl, { 
-          method: 'GET',
-          timeout: 3000 
-        });
-        if (response.ok) {
-          this.baseURL = `${testUrl}${API_BASE_PATH}`;
-          this.isConnected = true;
-          console.log(`✅ Auto-detected backend at: ${testUrl}`);
-          return this.baseURL;
-        }
-      } catch (error) {
-        console.log(`❌ Port ${port} not responding`);
-      }
-    }
-
-    throw new Error('❌ Could not connect to backend. Please ensure your backend is running on one of these ports: ' + POSSIBLE_PORTS.join(', '));
-  }
-
-  // Generic request handler with error handling and auto-detection
   async request(endpoint, options = {}) {
-    if (!this.baseURL) {
-      await this.detectBackendPort();
-    }
-
     const url = `${this.baseURL}${endpoint}`;
+
     const config = {
+      method: options.method || 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers,
+        ...(options.headers || {}),
       },
-      credentials: 'include', // Include cookies for session management
-      ...options,
+      credentials: 'include',
+      body: options.body ? JSON.stringify(options.body) : undefined,
     };
 
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error ${response.status}`;
+      try {
+        const data = await response.json();
+        errorMessage = data.error || errorMessage;
+      } catch {
+        // ignore JSON parse error
       }
-
-      return await response.json();
-    } catch (error) {
-      // If connection fails, reset and try to reconnect
-      if (error.message.includes('fetch') || error.message.includes('NetworkError')) {
-        console.log('🔄 Connection lost, trying to reconnect...');
-        this.isConnected = false;
-        this.baseURL = null;
-        
-        try {
-          await this.detectBackendPort();
-          // Retry the request once
-          const retryResponse = await fetch(`${this.baseURL}${endpoint}`, config);
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
-        } catch (retryError) {
-          console.error('❌ Retry failed:', retryError);
-        }
-      }
-      
-      console.error(`API Error (${endpoint}):`, error);
-      throw error;
+      throw new Error(errorMessage);
     }
+
+    return response.json();
   }
 
-  // GET request
-  async get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
+  // -------- API METHODS --------
+
+  getTodaysBrief() {
+    return this.request('/brief');
   }
 
-  // POST request
-  async post(endpoint, data = {}) {
-    return this.request(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+  markBriefDone() {
+    return this.request('/action/done', { method: 'POST' });
   }
 
-  // Brief API methods
-  async getTodaysBrief() {
-    return this.get('/brief');
-  }
-
-  // Action API methods
-  async markBriefDone() {
-    return this.post('/action/done');
-  }
-
-  async skipBrief() {
-    return this.post('/action/skip');
-  }
-
-  // Manual connection test
-  async testConnection() {
-    try {
-      await this.detectBackendPort();
-      return { success: true, url: this.baseURL };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
+  skipBrief() {
+    return this.request('/action/skip', { method: 'POST' });
   }
 }
 
-// Export singleton instance
+// ✅ Proper named export (ESLint happy)
 const apiService = new ApiService();
-
 export default apiService;

@@ -3,7 +3,7 @@ import '../CSS/mainPage.css'
 import { useBrief } from '../hooks/useBrief'
 
 function MainPage({ onStreakUpdate }) {
-  const { brief, loading, error, streak, actionCompleted, actionType, markDone, skipBrief } = useBrief();
+  const { brief, loading, error, streak, actionType, markDone, skipBrief } = useBrief();
   const [actionLoading, setActionLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -28,7 +28,7 @@ function MainPage({ onStreakUpdate }) {
     
     try {
       setActionLoading(true);
-      const response = await markDone();
+      await markDone();
       setSuccessMessage(`🎉 Task completed!`);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
@@ -45,7 +45,7 @@ function MainPage({ onStreakUpdate }) {
     
     try {
       setActionLoading(true);
-      const response = await skipBrief();
+      await skipBrief();
       setSuccessMessage(`⏭️ Task skipped, loading new task...`);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
